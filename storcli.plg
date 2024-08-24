@@ -1,0 +1,51 @@
+<?xml version='1.0' standalone='yes'?>
+<!DOCTYPE PLUGIN [
+	<!ENTITY name "storcli">
+	<!ENTITY author "linw1995">
+	<!ENTITY version "2024.08.24">
+	<!ENTITY gitURL "https://github.com/&author;/unraid-&name;/raw/main">
+	<!ENTITY pluginURL "&gitURL;/&name;.plg">
+	<!ENTITY plugin "/boot/config/plugins/&name;">
+	<!ENTITY md5 "b0eae7faaf1c88765b4851d06516a777">
+	<!ENTITY filename "storcli-&version;">
+]>
+
+<PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&pluginURL;" min="6.12.0"
+	support="https://github.com/&author;/unraid-&name;/issues">
+
+	<CHANGES>
+
+		###2024.08.24
+		- Initial release - based on version: Ver 007.2707.0000.0000 Dec 18, 2023
+
+	</CHANGES>
+
+	<FILE Run="/bin/bash">
+		<INLINE>
+			# remove old versions
+			rm -f $(ls &plugin;/*.tgz 2>/dev/null|grep -v '&filename;')
+		</INLINE>
+	</FILE>
+
+
+	<FILE Name="&plugin;/&filename;.tgz" Run="upgradepkg --install-new">
+		<URL>&gitURL;/packages/&filename;.tgz</URL>
+		<MD5>&md5;</MD5>
+	</FILE>
+
+	<FILE Run="/bin/bash">
+		<INLINE>
+			chmod ugo+x /usr/local/bin/storcli64
+		</INLINE>
+	</FILE>
+
+	<FILE Run="/bin/bash" Method="remove">
+		<INLINE>
+			# uninstall plugins
+	        removepkg &plugin;/*.tgz
+
+			# cleanup
+			rm -rf &plugin;
+		</INLINE>
+	</FILE>
+</PLUGIN>
