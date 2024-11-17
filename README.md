@@ -14,5 +14,5 @@ tar --owner=0 --group=0 -cvzf packages/storcli-2024.08.24.tgz --xform='s,./artif
 Add the following URL to the Plugin Install URL field in the unRAID webui:
 
 ```
-https://github.com/linw1995/unraid-storcli/raw/main/storcli.plg
+https://github.com/t3chguy/unraid-storcli/raw/main/plugin/storcli.plg
 ```

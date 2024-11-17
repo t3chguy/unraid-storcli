@@ -1,0 +1,109 @@
+Menu="Buttons:199"
+Link="nav-user"
+---
+<?
+/* Copyright desertwitch (and any other NUT contributors who contributed to the original code)
+ * Copyright Lime Technology (any and all other parts of Unraid)
+ *
+ * Copyright Michal Telatynski <7t3chguy@gmail.com> (as author and maintainer of this file)
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License 2
+ * as published by the Free Software Foundation.
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ */
+?>
+<?$storcli_footer = "enable";?>
+<?$storcli_running = true;?>
+<?$update_dash = true;?>
+<?$storcli_interval = 15;?>
+
+<?
+// -------------------------------------------------------------
+// FOOTER
+// -------------------------------------------------------------
+?>
+<?if ($storcli_footer == "enable" && $storcli_running):?>
+    <style type="text/css">
+        #storcli_footer {
+            float: right;
+            margin-right: 6px;
+        }
+
+        #storcli_footer i {
+            margin: 0 6px 0 24px;
+        }
+
+        .faa-parent.animated-hover:hover>.faa-ring,.faa-ring.animated,.faa-ring.animated-hover:hover{
+            -webkit-animation:ring 2s ease infinite;
+            animation:ring 2s ease infinite;
+            transform-origin-x:50%;
+            transform-origin-y:0;
+            transform-origin-z:initial
+        }
+        .faa-parent.animated-hover:hover>.faa-ring.faa-fast,.faa-ring.animated-hover.faa-fast:hover,.faa-ring.animated.faa-fast{
+            -webkit-animation:ring 1s ease infinite;
+            animation:ring 1s ease infinite
+        }
+        .faa-parent.animated-hover:hover>.faa-ring.faa-slow,.faa-ring.animated-hover.faa-slow:hover,.faa-ring.animated.faa-slow{
+            -webkit-animation:ring 3s ease infinite;
+            animation:ring 3s ease infinite
+        }
+    </style>
+    <script type="text/javascript">
+        function getStorclifooter() {
+            $.get('/plugins/storcli/include/storcli_footer.php', function(data) {
+                if(data && data.success && data.success.response) {
+                    const hovered = $(".tooltip-storcli:hover").map(function() {
+                        return this.id;
+                    }).get();
+                    $('#storcli_footer').html(`
+                        <span
+                            title="HBA Temperature"
+                            class="tooltip-storcli"
+                            data="<b>HBA Temperature</b>"
+                        >
+                            <i class='fa fa-thermometer-half'></i>
+                            ${data.success.response[0].temp}&deg;C
+                        </span>
+                    `);
+                    $.each(hovered, function(k, v) {
+                        if(v.length) {
+                            $("#" + v).trigger("mouseenter");
+                        }
+                    });
+                } else {
+                    $("#storcli_footer").html("<i class='red-text fa fa-times-circle' title='Storcli: Error (check logs)'></i>");
+                }
+            }, 'json');
+            clearTimeout(timers.getStorclifooter);
+            <?if ($update_dash):?>
+            timers.getStorclifooter = setTimeout(getStorclifooter, <?=max(abs(isset($display['refresh']) ? $display['refresh'] : 0),($storcli_interval * 1000))?>);
+            <?endif;?>
+        }
+        $(function() {
+            $("<span id='storcli_footer'></span>").insertAfter("div#footer > span#copyright");
+            getStorclifooter();
+            $('body').on('mouseenter', '.tooltip-storcli', function() {
+                if (!$(this).hasClass("tooltipstered")) {
+                    $(this).tooltipster({
+                        delay:100,
+                        zIndex:999,
+                        trigger:'custom',
+                        interactive: true,
+                        contentAsHTML: true,
+                        triggerOpen:{mouseenter:true, touchstart:true},
+                        triggerClose:{click:false, scroll:true, mouseleave:true, tap:true},
+                        functionBefore: function(instance, helper)
+                        {
+                            instance.content($(helper.origin).attr("data"));
+                        }
+                    }).tooltipster('open');
+                }
+            });
+        });
+    </script>
+<?endif;?>
