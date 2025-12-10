@@ -85,7 +85,7 @@ Link="nav-user"
             <?endif;?>
         }
         $(function() {
-            $("<span id='storcli_footer'></span>").insertAfter("div#footer > span#copyright");
+            $("<span id='storcli_footer'></span>").insertAfter("#footer > #copyright");
             getStorclifooter();
             $('body').on('mouseenter', '.tooltip-storcli', function() {
                 if (!$(this).hasClass("tooltipstered")) {
